@@ -82,8 +82,8 @@ if __name__ == '__main__':
     long_maison = 0
 
     # Dimensions en nombres de leds
-    longueur_maison = 75
-    largeur_maison  = 75
+    longueur_maison = 50
+    largeur_maison  = 50
 
     diffusion_soleil = 6
 
