@@ -50,6 +50,8 @@ import sunpos2 as sunpos
 import math
 import time
 
+from neopixel import *
+
 from PIL import Image
 
 from led import led
