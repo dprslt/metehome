@@ -56,6 +56,6 @@ class led(object):
     def applyColorToMatrix(self, matrix):
         matrix[self.y][self.x] = self.color
 
-    def applyColorToStrip():
+    def applyColorToStrip(self):
         self.strip.setPixelColor(self.strip_addr, self.color)
         return;
