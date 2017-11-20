@@ -59,6 +59,6 @@ class led(object):
     def applyColorToStrip(self):
         rgb_color=self.color
         for i in range(self.strip.numPixels()):
-        self.strip.setPixelColor(i, Color(int(rgb_color[0]),int(rgb_color[1]),int(rgb_color[2])))
+            self.strip.setPixelColor(i, Color(int(rgb_color[0]),int(rgb_color[1]),int(rgb_color[2])))
         #self.strip.setPixelColor(self.strip.numPixels(self.strip_addr, Color(int(rgb_color[0]),int(rgb_color[1]),int(rgb_color[2])))
         return;
