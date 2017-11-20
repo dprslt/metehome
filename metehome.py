@@ -55,6 +55,18 @@ from PIL import Image
 from led import led
 
 
+# LED strip configuration:
+LED_COUNT      = 16      # Number of LED pixels.
+LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
+#LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
+LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
+LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
+LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
+LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
+LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+LED_STRIP      = ws.WS2811_STRIP_GRB   # Strip type and colour ordering
+
+
 ###
 if __name__ == '__main__':
 
@@ -73,7 +85,7 @@ if __name__ == '__main__':
 
     diffusion_soleil = 6
 
-    gradient_upscaling = 1.04
+    matrix_upscaling = 1.04
 
     ############################ Constantes ####################################
     # Lorsque l'orientation du soleil passe en dessous de cette limite,
@@ -89,33 +101,38 @@ if __name__ == '__main__':
     leds = []
     # Simulutation d'une piece carrée
 
+    # Create NeoPixel object with appropriate configuration.
+	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
+	# Intialize the library (must be called once before other functions).
+	strip.begin()
+
 
     ### Generation des leds
     for x in range(largeur_maison):
-        led_x = x + int(largeur_maison*(gradient_upscaling-1)/2)
+        led_x = x + int(largeur_maison*(matrix_upscaling-1)/2)
 
-        led_y_1 = int(longueur_maison*(gradient_upscaling-1)/2)
-        led_y_2 = longueur_maison + int(longueur_maison*(gradient_upscaling-1)/2)
-        led_y_3 = int(longueur_maison*(gradient_upscaling)/2)
+        led_y_1 = int(longueur_maison*(matrix_upscaling-1)/2)
+        #led_y_2 = longueur_maison + int(longueur_maison*(matrix_upscaling-1)/2)
+        led_y_3 = int(longueur_maison*(matrix_upscaling)/2)
 
-        leds.append(led(led_x,led_y_1,"","TODO"))
-        leds.append(led(led_x,led_y_2,"","TODO"))
-        leds.append(led(led_x,led_y_3,"","TODO"))
+        leds.append(led(led_x,led_y_1,strip,x))
+        #leds.append(led(led_x,led_y_2,strip,"TODO"))
+        leds.append(led(led_x,led_y_3,strip,largeur_maison+longueur_maison+x))
 
 
     for y in range(longueur_maison):
-        led_y = y + int(longueur_maison*(gradient_upscaling-1)/2)
+        led_y = y + int(longueur_maison*(matrix_upscaling-1)/2)
 
-        led_x_1 = int(largeur_maison*(gradient_upscaling-1)/2)
-        led_x_2 = largeur_maison + int(largeur_maison*(gradient_upscaling-1)/2)
-        led_x_3 = int(largeur_maison*(gradient_upscaling)/2)
+        led_x_1 = int(largeur_maison*(matrix_upscaling-1)/2)
+        #led_x_2 = largeur_maison + int(largeur_maison*(matrix_upscaling-1)/2)
+        led_x_3 = int(largeur_maison*(matrix_upscaling)/2)
 
-        leds.append(led(led_x_1,led_y,"","TODO"))
-        leds.append(led(led_x_2,led_y,"","TODO"))
-        leds.append(led(led_x_3,led_y,"","TODO"))
+        leds.append(led(led_x_1,led_y,strip,largeur_maison+y))
+        #leds.append(led(led_x_2,led_y,strip,"TODO"))
+        leds.append(led(led_x_3,led_y,strip,2*largeur_maison+longueur_maison+y))
 
     #####
-    size_y, size_x = (int(largeur_maison*gradient_upscaling),int(longueur_maison*gradient_upscaling))
+    size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
     print "Dimensions matrix_grad : (", size_y,",",size_x,")"
 
     while(True):
@@ -154,10 +171,12 @@ if __name__ == '__main__':
         data = np.zeros((size_y,size_x,3), dtype=np.uint8)
         for l in leds:
             l.computeColor(elevation,matrix_grad)
-            l.applyColorToMatrix(data)
-        img = Image.fromarray(data,'RGB')
+            #l.applyColorToMatrix(data)
+            l.applyColorToStrip()
 
-        img.save('imgs/s%05d.png' % (steps))
+        strip.show()
+        # img = Image.fromarray(data,'RGB')
+        # img.save('imgs/s%05d.png' % (steps))
 
         steps += 5
         #time.sleep(0.09)
