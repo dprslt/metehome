@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     diffusion_soleil = 6 
 
-    matrix_upscaling = 1.04
+    matrix_upscaling = 1.30
 
     ############################ Constantes ####################################
     # Lorsque l'orientation du soleil passe en dessous de cette limite,
@@ -110,31 +110,49 @@ if __name__ == '__main__':
     # Simulutation d'une piece carrée
 
     ### Generation des leds
-    for x in range(largeur_maison):
-        led_x = x + int(largeur_maison*(matrix_upscaling-1)/2)
+    #for x in range(largeur_maison):
+    #    led_x = x + int(largeur_maison*(matrix_upscaling-1))
 
-        led_y_1 = int(longueur_maison*(matrix_upscaling-1)/2)
-        #led_y_2 = longueur_maison + int(longueur_maison*(matrix_upscaling-1)/2)
-        led_y_3 = int(longueur_maison*(matrix_upscaling)/2)
+    #    led_y_1 = int(longueur_maison*(matrix_upscaling-1))
+    #    #led_y_2 = longueur_maison + int(longueur_maison*(matrix_upscaling-1)/2)
+    #    led_y_3 = int(longueur_maison*(matrix_upscaling))
 
-        leds.append(led(led_x,led_y_1,strip,x, (255,0,0)))
-        #leds.append(led(led_x,led_y_2,strip,"TODO"))
-        leds.append(led(led_x,led_y_3,strip,largeur_maison+longueur_maison+x, (0,255,0)))
+    #    leds.append(led(led_x,led_y_1,strip,x, (255,0,0)))
+    #    #leds.append(led(led_x,led_y_2,strip,"TODO"))
+    #    leds.append(led(led_x,led_y_3,strip,2*largeur_maison+longueur_maison-x-1, (0,255,0)))
 
+    #for y in range(longueur_maison):
+    #   led_y = y + int(longueur_maison*(matrix_upscaling-1))
 
-    for y in range(longueur_maison):
-       led_y = y + int(longueur_maison*(matrix_upscaling-1)/2)
+    #   led_x_1 = int(largeur_maison*(matrix_upscaling-1))
+    #    #led_x_2 = largeur_maison + int(largeur_maison*(matrix_upscaling-1)/2)
+    #   led_x_3 = int(largeur_maison*(matrix_upscaling))
 
-       led_x_1 = int(largeur_maison*(matrix_upscaling-1)/2)
-        #led_x_2 = largeur_maison + int(largeur_maison*(matrix_upscaling-1)/2)
-       led_x_3 = int(largeur_maison*(matrix_upscaling)/2)
+    #   leds.append(led(led_x_3,led_y,strip,largeur_maison+y,(255,255,0)))
+    #    #leds.append(led(led_x_2,led_y,strip,"TODO"))
+    #   leds.append(led(led_x_1,led_y,strip,2*largeur_maison+2*longueur_maison-y-1,(0,255,255)))
 
-       leds.append(led(led_x_1,led_y,strip,largeur_maison+y,(255,255,0)))
-        #leds.append(led(led_x_2,led_y,strip,"TODO"))
-       leds.append(led(led_x_3,led_y,strip,2*largeur_maison+longueur_maison+y,(0,255,255)))
+    longueur_upscaling = int(longueur_maison*(matrix_upscaling-1)/2)
+    largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
+    print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
+    for x in range(longueur_maison):
+        led_x = x+1 + longueur_upscaling 
+        led_y = 0 +largeur_upscaling 
+        led_x2 = x+1 + longueur_upscaling 
+        led_y2 = largeur_maison+2 + largeur_upscaling 
+        leds.append(led(led_x, led_y, strip, x, (255,0,0)))
+        leds.append(led(led_x2, led_y2, strip, 2*longueur_maison+largeur_maison-x-1 , (0,255,0)))
+
+    for y in range(largeur_maison):
+        led_x = longueur_maison+2 + longueur_upscaling 
+        led_y = y+1 + largeur_upscaling 
+        led_x2 = 0 + longueur_upscaling 
+        led_y2 = y+1 + largeur_upscaling 
+        leds.append(led(led_x, led_y, strip, y+longueur_maison, (255,255,0)))
+        leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,255,255)))
 
     for l in leds:
-        print('Addresse : ',l.strip_addr, " color : ", l.color)
+        print('Addresse : ',l.strip_addr, " color : ", l.color, " x : ", l.x, " y : ", l.y)
         l.applyColorToStrip()
 
     strip.show()
@@ -148,6 +166,7 @@ if __name__ == '__main__':
     size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
     print "Dimensions matrix_grad : (", size_y,",",size_x,")"
 
+    steps = 180
     while(True):
         # On calcul l'azimut et l'élévation du soleil en fonction de la date et
         # du lieu.

@@ -20,7 +20,7 @@ class led(object):
     DARK_BLUE = np.array((0,0,120))
     BLUE = np.array((0,150,255))
 
-    YELLOW = np.array((255,255,160))
+    YELLOW = np.array((255,255,0))
     ORANGE = np.array((255,120,0))
 
     """docstring for ."""
