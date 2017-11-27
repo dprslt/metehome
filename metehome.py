@@ -58,7 +58,7 @@ from led import led
 
 
 # LED strip configuration:
-LED_COUNT      = 16      # Number of LED pixels.
+LED_COUNT      = 300      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -82,10 +82,10 @@ if __name__ == '__main__':
     long_maison = 0
 
     # Dimensions en nombres de leds
-    longueur_maison = 50
-    largeur_maison  = 50
+    longueur_maison = 75
+    largeur_maison  = 75
 
-    diffusion_soleil = 6
+    diffusion_soleil = 6 
 
     matrix_upscaling = 1.04
 
@@ -117,21 +117,32 @@ if __name__ == '__main__':
         #led_y_2 = longueur_maison + int(longueur_maison*(matrix_upscaling-1)/2)
         led_y_3 = int(longueur_maison*(matrix_upscaling)/2)
 
-        leds.append(led(led_x,led_y_1,strip,x))
+        leds.append(led(led_x,led_y_1,strip,x, (255,0,0)))
         #leds.append(led(led_x,led_y_2,strip,"TODO"))
-        leds.append(led(led_x,led_y_3,strip,largeur_maison+longueur_maison+x))
+        leds.append(led(led_x,led_y_3,strip,largeur_maison+longueur_maison+x, (0,255,0)))
 
 
     for y in range(longueur_maison):
-        led_y = y + int(longueur_maison*(matrix_upscaling-1)/2)
+       led_y = y + int(longueur_maison*(matrix_upscaling-1)/2)
 
-        led_x_1 = int(largeur_maison*(matrix_upscaling-1)/2)
+       led_x_1 = int(largeur_maison*(matrix_upscaling-1)/2)
         #led_x_2 = largeur_maison + int(largeur_maison*(matrix_upscaling-1)/2)
-        led_x_3 = int(largeur_maison*(matrix_upscaling)/2)
+       led_x_3 = int(largeur_maison*(matrix_upscaling)/2)
 
-        leds.append(led(led_x_1,led_y,strip,largeur_maison+y))
+       leds.append(led(led_x_1,led_y,strip,largeur_maison+y,(255,255,0)))
         #leds.append(led(led_x_2,led_y,strip,"TODO"))
-        leds.append(led(led_x_3,led_y,strip,2*largeur_maison+longueur_maison+y))
+       leds.append(led(led_x_3,led_y,strip,2*largeur_maison+longueur_maison+y,(0,255,255)))
+
+    for l in leds:
+        print('Addresse : ',l.strip_addr, " color : ", l.color)
+        l.applyColorToStrip()
+
+    strip.show()
+    print "Displaying sides"
+
+    time.sleep(2)
+
+    
 
     #####
     size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
@@ -180,5 +191,5 @@ if __name__ == '__main__':
         # img = Image.fromarray(data,'RGB')
         # img.save('imgs/s%05d.png' % (steps))
 
-        steps += 5
+        steps += 10
         #time.sleep(0.09)
