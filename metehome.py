@@ -56,6 +56,8 @@ from PIL import Image
 
 from led import led
 
+from optparse import OptionParser
+
 
 # LED strip configuration:
 LED_COUNT      = 300      # Number of LED pixels.
@@ -74,29 +76,7 @@ if __name__ == '__main__':
 
     np.set_printoptions(linewidth=200)
 
-    # Ci-dessous les paramètres nécessaires au fonctionement du programme.
-    ############################################################################
-    # Azimut de la piece, et position GPS de la maison => à déterminer sur place
-    azimut_maison = 0
-    lat_maison = 41
-    long_maison = 0
-
-    # Dimensions en nombres de leds
-    longueur_maison = 75
-    largeur_maison  = 75
-
-    diffusion_soleil = 6 
-
-    matrix_upscaling = 1.30
-
-    ############################ Constantes ####################################
-    # Lorsque l'orientation du soleil passe en dessous de cette limite,
-    # c'est le debut de la nuit noire
-    # Cette valeur sert à créer un dégradé pour la tombée de la nuit
-    LIMITE_COUCHER_DE_SOLEIL = 20
-    VALEUR_DE_NORMALISATION_DE_LA_MATRICE = 255
-
-    ############################ Traitement ####################################
+        ############################ Traitement ####################################
 
     steps = 0
 
@@ -107,34 +87,101 @@ if __name__ == '__main__':
     # Intialize the library (must be called once before other functions).
     strip.begin()
 
-    # Simulutation d'une piece carrée
+    parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
+    parser.add_option("-a", "--azimut",
+                        action="store",
+                        dest="azimut_maison",
+                        default=0,
+                        help="Azimut de la maison")
+    parser.add_option("--latitude",
+                        action="store",
+                        dest="lat_maison",
+                        default=45.1317,
+                        help="latitude de la maison")
+    parser.add_option("--longitude",
+                        action="store",
+                        dest="long_maison",
+                        default=6.1661,
+                        help="longitude de la maison")
+    parser.add_option("-d", "--diffusion",
+                        action="store",
+                        dest="diffusion_soleil",
+                        default=6,
+                        help="[Avancé] Coefficient de diffusion du soleil")
+    parser.add_option("-u", "--upscaling",
+                        action="store",
+                        dest="matrix_upscaling",
+                        default=1.3,
+                        help="[Avancé] Taux d'agrandissement de la matrice de visualisation du soleil")
+    parser.add_option("-l", "--limite",
+                        action="store",
+                        dest="limite_coucher_de_soleil",
+                        default=20,
+                        help="[Avancé] Limite d'azimut permettant de débuter le coucher du soleil afin de permettre un dégradé")
+    parser.add_option("-r", "--rectangle",
+                        action="store_true",
+                        dest="mode_rectangle",
+                        help="Génère un rectangle comme matrice. Rend -x et -y obligatoire")
+    parser.add_option("-x", "--longueur",
+                        action="store",
+                        dest="longueur_maison",
+                        default=75,
+                        help="Longueur en nombre de leds de la maison. Paramètre pris en compte lorsque -r activé")
+    parser.add_option("-y", "--largeur",
+                        action="store",
+                        dest="largeur_maison",
+                        default=75,
+                        help="Largeur en nombre de leds de la maison. Paramètre pris en compte lorsque -r activé")
+
+
+
+
+
+
+
+    (options,args) = parser.parse_args()
+
+    # Ci-dessous les paramètres nécessaires au fonctionement du programme.
+    ############################################################################
+    # Azimut de la piece, et position GPS de la maison => à déterminer sur place
+    azimut_maison = int(options.azimut_maison)
+    print("azimut_maison : ", azimut_maison)
+
+    lat_maison = float(options.lat_maison)
+    print("lat_maison : ", lat_maison)
+
+    long_maison = float(options.long_maison)
+    print("long_maison : ", long_maison)
+
+    diffusion_soleil = int(options.diffusion_soleil)
+    print("diffusion_soleil : ",diffusion_soleil)
+
+    matrix_upscaling = float(options.matrix_upscaling)
+    print("matrix_upscaling : ", matrix_upscaling)
+
+    ############################ Constantes ####################################
+    # Lorsque l'orientation du soleil passe en dessous de cette limite,
+    # c'est le debut de la nuit noire
+    # Cette valeur sert à créer un dégradé pour la tombée de la nuit
+    LIMITE_COUCHER_DE_SOLEIL = int(options.limite_coucher_de_soleil)
+    print("LIMITE_COUCHER_DE_SOLEIL : ", LIMITE_COUCHER_DE_SOLEIL)
+
+    VALEUR_DE_NORMALISATION_DE_LA_MATRICE = 255
+
+   # Simulutation d'une piece rectangulaire
+   # Dimensions en nombres de leds
+    longueur_maison = int(options.longueur_maison)
+    print("longueur_maison : ", longueur_maison)
+
+    largeur_maison  = int(options.largeur_maison)
+    print("largeur_maison : ",largeur_maison)
 
     ### Generation des leds
-    #for x in range(largeur_maison):
-    #    led_x = x + int(largeur_maison*(matrix_upscaling-1))
-
-    #    led_y_1 = int(longueur_maison*(matrix_upscaling-1))
-    #    #led_y_2 = longueur_maison + int(longueur_maison*(matrix_upscaling-1)/2)
-    #    led_y_3 = int(longueur_maison*(matrix_upscaling))
-
-    #    leds.append(led(led_x,led_y_1,strip,x, (255,0,0)))
-    #    #leds.append(led(led_x,led_y_2,strip,"TODO"))
-    #    leds.append(led(led_x,led_y_3,strip,2*largeur_maison+longueur_maison-x-1, (0,255,0)))
-
-    #for y in range(longueur_maison):
-    #   led_y = y + int(longueur_maison*(matrix_upscaling-1))
-
-    #   led_x_1 = int(largeur_maison*(matrix_upscaling-1))
-    #    #led_x_2 = largeur_maison + int(largeur_maison*(matrix_upscaling-1)/2)
-    #   led_x_3 = int(largeur_maison*(matrix_upscaling))
-
-    #   leds.append(led(led_x_3,led_y,strip,largeur_maison+y,(255,255,0)))
-    #    #leds.append(led(led_x_2,led_y,strip,"TODO"))
-    #   leds.append(led(led_x_1,led_y,strip,2*largeur_maison+2*longueur_maison-y-1,(0,255,255)))
 
     longueur_upscaling = int(longueur_maison*(matrix_upscaling-1)/2)
     largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
     print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
+
     for x in range(longueur_maison):
         led_x = x+1 + longueur_upscaling 
         led_y = 0 +largeur_upscaling 
