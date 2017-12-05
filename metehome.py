@@ -49,6 +49,7 @@ import numpy as np
 import sunpos2 as sunpos
 import math
 import time
+import os.path
 
 from neopixel import *
 
@@ -118,6 +119,10 @@ if __name__ == '__main__':
                         dest="limite_coucher_de_soleil",
                         default=20,
                         help="[Avancé] Limite d'azimut permettant de débuter le coucher du soleil afin de permettre un dégradé")
+    parser.add_option("-f", "--file",
+                        action="store",
+                        dest="mode_matrix_file",
+                        help="Fichier de matrice correspondant au placement des leds")
     parser.add_option("-r", "--rectangle",
                         action="store_true",
                         dest="mode_rectangle",
@@ -168,35 +173,68 @@ if __name__ == '__main__':
 
     VALEUR_DE_NORMALISATION_DE_LA_MATRICE = 255
 
-   # Simulutation d'une piece rectangulaire
-   # Dimensions en nombres de leds
-    longueur_maison = int(options.longueur_maison)
-    print("longueur_maison : ", longueur_maison)
+    if options.mode_rectangle is not None:
+        # Simulutation d'une piece rectangulaire
+        print("Simulation d'une pièce rectangulaire")
+        # Dimensions en nombres de leds
+        longueur_maison = int(options.longueur_maison)
+        print("longueur_maison : ", longueur_maison)
 
-    largeur_maison  = int(options.largeur_maison)
-    print("largeur_maison : ",largeur_maison)
+        largeur_maison  = int(options.largeur_maison)
+        print("largeur_maison : ",largeur_maison)
 
-    ### Generation des leds
+        ### Generation des leds
 
-    longueur_upscaling = int(longueur_maison*(matrix_upscaling-1)/2)
-    largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
-    print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
+        longueur_upscaling = int(longueur_maison*(matrix_upscaling-1)/2)
+        largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
+        print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
 
-    for x in range(longueur_maison):
-        led_x = x+1 + longueur_upscaling 
-        led_y = 0 +largeur_upscaling 
-        led_x2 = x+1 + longueur_upscaling 
-        led_y2 = largeur_maison+2 + largeur_upscaling 
-        leds.append(led(led_x, led_y, strip, x, (255,0,0)))
-        leds.append(led(led_x2, led_y2, strip, 2*longueur_maison+largeur_maison-x-1 , (0,255,0)))
+        for x in range(longueur_maison):
+            led_x = x+1 + longueur_upscaling 
+            led_y = 0 +largeur_upscaling 
+            led_x2 = x+1 + longueur_upscaling 
+            led_y2 = largeur_maison+2 + largeur_upscaling 
+            leds.append(led(led_x, led_y, strip, x, (255,0,0)))
+            leds.append(led(led_x2, led_y2, strip, 2*longueur_maison+largeur_maison-x-1 , (0,255,0)))
 
-    for y in range(largeur_maison):
-        led_x = longueur_maison+2 + longueur_upscaling 
-        led_y = y+1 + largeur_upscaling 
-        led_x2 = 0 + longueur_upscaling 
-        led_y2 = y+1 + largeur_upscaling 
-        leds.append(led(led_x, led_y, strip, y+longueur_maison, (255,255,0)))
-        leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,255,255)))
+        for y in range(largeur_maison):
+            led_x = longueur_maison+2 + longueur_upscaling 
+            led_y = y+1 + largeur_upscaling 
+            led_x2 = 0 + longueur_upscaling 
+            led_y2 = y+1 + largeur_upscaling 
+            leds.append(led(led_x, led_y, strip, y+longueur_maison, (255,255,0)))
+            leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,255,255)))
+
+    elif options.mode_matrix_file is not None:
+        print("Lecture d'une matrice par fichier")
+        if os.path.isfile(options.mode_matrix_file):
+            print("Lecture du fichier ", options.mode_matrix_file, "...")
+            matrix_file = np.loadtxt(options.mode_matrix_file)
+            print("Matrice de taille :", matrix_file.shape)
+    
+            # Dimensions en nombres de leds
+            longueur_maison = matrix_file.shape[0] 
+            print("longueur_maison : ", longueur_maison)
+
+            largeur_maison  = matrix_file.shape[1]
+            print("largeur_maison : ",largeur_maison)
+
+            ### Generation des leds
+
+            longueur_upscaling = int(longueur_maison*(matrix_upscaling-1)/2)
+            largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
+            print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
+
+            for i_line, line in enumerate(matrix_file):
+                for i_col, col in enumerate(line):
+                    if int(col) != 0:
+                        leds.append(led(i_line, i_col, strip, int(col), (0,0,0,0)))
+        else:
+            print("Fichier ", options.mode_matrix_file, "introuvable")
+            exit()
+    else:
+        print("Attention ! [-r -x [VALUE] -y [VALUE]] ou [-f [FILE]] obligatoire !")
+        exit()
 
     for l in leds:
         print('Addresse : ',l.strip_addr, " color : ", l.color, " x : ", l.x, " y : ", l.y)
