@@ -59,14 +59,18 @@ from led import led
 
 from optparse import OptionParser
 
+import sys
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+        
 # LED strip configuration:
-LED_COUNT      = 300      # Number of LED pixels.
+LED_COUNT      = 480      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
-LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 60     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_STRIP      = ws.WS2811_STRIP_GRB   # Strip type and colour ordering
@@ -203,7 +207,7 @@ if __name__ == '__main__':
             led_x2 = 0 + longueur_upscaling 
             led_y2 = y+1 + largeur_upscaling 
             leds.append(led(led_x, led_y, strip, y+longueur_maison, (255,255,0)))
-            leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,255,255)))
+            leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,0,255)))
 
     elif options.mode_matrix_file is not None:
         print("Lecture d'une matrice par fichier")
