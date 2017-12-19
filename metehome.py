@@ -232,7 +232,7 @@ if __name__ == '__main__':
             for i_line, line in enumerate(matrix_file):
                 for i_col, col in enumerate(line):
                     if int(col) != 0:
-                        leds.append(led(i_line, i_col, strip, int(col), (0,0,0,0)))
+                        leds.append(led(i_line, i_col, strip, int(col-1), (0,0,0,0)))
         else:
             print("Fichier ", options.mode_matrix_file, "introuvable")
             exit()
