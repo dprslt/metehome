@@ -217,11 +217,19 @@ if __name__ == '__main__':
             print("Matrice de taille :", matrix_file.shape)
     
             # Dimensions en nombres de leds
-            longueur_maison = matrix_file.shape[0] 
-            print("longueur_maison : ", longueur_maison)
+            if matrix_file.shape[0] >= matrix_file.shape[1]:
+                longueur_maison = matrix_file.shape[0] 
+                print("longueur_maison : ", longueur_maison)
 
-            largeur_maison  = matrix_file.shape[1]
-            print("largeur_maison : ",largeur_maison)
+                largeur_maison  = matrix_file.shape[1]
+                print("largeur_maison : ",largeur_maison)
+            else:
+                longueur_maison = matrix_file.shape[1] 
+                print("longueur_maison : ", longueur_maison)
+
+                largeur_maison  = matrix_file.shape[0]
+                print("largeur_maison : ",largeur_maison)
+
 
             ### Generation des leds
 
@@ -253,6 +261,20 @@ if __name__ == '__main__':
 
     #####
     size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
+    print "size_x : ",size_x, "size_y : ", size_y
+    
+    ### TODO
+    if size_y > size_x:
+        old_x=size_x
+        size_x=size_y
+        biggerY=True
+    else:
+        old_y=size_y
+        size_y=size_x
+        biggerY=False
+    
+
+
     print "Dimensions matrix_grad : (", size_y,",",size_x,")"
 
     steps = 180
@@ -263,9 +285,32 @@ if __name__ == '__main__':
         # Initialisation de la matrice de portée du soleil
         matrix_grad = np.zeros((size_y,size_x))
         # Projection d" la position du solein sur un plan
+        print "size_x : ",size_x, "size_y : ", size_y
         x, y = project_sun(elevation, azimut_soleil - azimut_maison, size_x,size_y)
 
         # Placement du soleil sur le plan
+        
+        
+        
+        
+        
+        
+        
+        ##TODO
+        print "x : " ,x, " y : ",y
+        #if biggerY:
+        #    print x, size_x/2, old_x/2
+        #    x= x + size_x/2 - old_x/2
+        #else:
+        #    y= y + size_y/2 - old_y/2
+
+
+
+
+
+
+
+        print "x : " ,x, " y : ",y
         matrix_grad[y,x] = 1
 
         print steps," : ",(steps/60)%24,"h ", steps%60,"m  elevation : ",int(elevation)
