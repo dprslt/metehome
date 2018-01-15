@@ -4,6 +4,12 @@
 Cette fonction calcul la projection du soleil sur un plan horizontal dans les
 dimensions indiquées.
 Les coordonées sont données par rapport au coin supérieur gauche du plan.
+
+Les paramètres d'entrées proviennent de la librairie sunpos2
+
+elevation : Elevation du soleil en degres
+azimut : azimut du soleil en degres
+size_x et size_y : dimensions de la matrice
 """
 def project_sun(elevation, azimut, size_x, size_y):
     mid_x = size_x/2
@@ -19,10 +25,14 @@ def project_sun(elevation, azimut, size_x, size_y):
 """
 Cette fonction diffuse une valeur sur un plan.
 Elle est utilisée pour simuler l'éclairage du soleil sur le plan
+
+arr : La matrice sur laqu'elle la diffusion doit être faite.
 """
 def diffusion(arr):
     coeff = 0.10
 
+    # Cette partie du code est un peu complexe, elle fait appel
+    # a une fonction de numpy pour calculer la moyenne des pixels avoisinant
     right_roll = np.roll(arr,shift=1,axis=1) # right
     right_roll[:,0] = arr[:,0]
 
@@ -63,13 +73,13 @@ import sys
 
 reload(sys)
 sys.setdefaultencoding('utf8')
-        
+
 # LED strip configuration:
 LED_COUNT      = 480      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
+LED_DMA        = 10       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 60     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
@@ -81,7 +91,7 @@ if __name__ == '__main__':
 
     np.set_printoptions(linewidth=200)
 
-        ############################ Traitement ####################################
+    ############################ Traitement ####################################
 
     steps = 0
 
@@ -194,18 +204,18 @@ if __name__ == '__main__':
         print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
 
         for x in range(longueur_maison):
-            led_x = x+1 + longueur_upscaling 
-            led_y = 0 +largeur_upscaling 
-            led_x2 = x+1 + longueur_upscaling 
-            led_y2 = largeur_maison+2 + largeur_upscaling 
+            led_x = x+1 + longueur_upscaling
+            led_y = 0 +largeur_upscaling
+            led_x2 = x+1 + longueur_upscaling
+            led_y2 = largeur_maison+2 + largeur_upscaling
             leds.append(led(led_x, led_y, strip, x, (255,0,0)))
             leds.append(led(led_x2, led_y2, strip, 2*longueur_maison+largeur_maison-x-1 , (0,255,0)))
 
         for y in range(largeur_maison):
-            led_x = longueur_maison+2 + longueur_upscaling 
-            led_y = y+1 + largeur_upscaling 
-            led_x2 = 0 + longueur_upscaling 
-            led_y2 = y+1 + largeur_upscaling 
+            led_x = longueur_maison+2 + longueur_upscaling
+            led_y = y+1 + largeur_upscaling
+            led_x2 = 0 + longueur_upscaling
+            led_y2 = y+1 + largeur_upscaling
             leds.append(led(led_x, led_y, strip, y+longueur_maison, (255,255,0)))
             leds.append(led(led_x2, led_y2, strip, 2*largeur_maison+2*longueur_maison-y-1, (0,0,255)))
 
@@ -215,16 +225,16 @@ if __name__ == '__main__':
             print("Lecture du fichier ", options.mode_matrix_file, "...")
             matrix_file = np.loadtxt(options.mode_matrix_file)
             print("Matrice de taille :", matrix_file.shape)
-    
+
             # Dimensions en nombres de leds
             if matrix_file.shape[0] >= matrix_file.shape[1]:
-                longueur_maison = matrix_file.shape[0] 
+                longueur_maison = matrix_file.shape[0]
                 print("longueur_maison : ", longueur_maison)
 
                 largeur_maison  = matrix_file.shape[1]
                 print("largeur_maison : ",largeur_maison)
             else:
-                longueur_maison = matrix_file.shape[1] 
+                longueur_maison = matrix_file.shape[1]
                 print("longueur_maison : ", longueur_maison)
 
                 largeur_maison  = matrix_file.shape[0]
@@ -237,10 +247,28 @@ if __name__ == '__main__':
             largeur_upscaling = int(largeur_maison*(matrix_upscaling-1)/2)
             print("Longueur upscaling : ", longueur_upscaling, " Largeur upscaling : ", largeur_upscaling)
 
+            #####
+            size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
+            print "size_x : ",size_x, "size_y : ", size_y
+
+            if size_y > size_x:
+                size_x=size_y
+                biggerY=True
+            else:
+                size_y=size_x
+                biggerY=False
+
             for i_line, line in enumerate(matrix_file):
                 for i_col, col in enumerate(line):
                     if int(col) != 0:
-                        leds.append(led(i_line, i_col, strip, int(col-1), (0,0,0,0)))
+                        if biggerY:
+                            x=i_line + largeur_upscaling
+                            y=i_col + longueur_upscaling
+                        else:
+                            x=i_line + longueur_upscaling
+                            y=i_col + largeur_upscaling
+                        print("x=", x, " y=", y, " i_line=", i_line, " i_col=", i_col, " size_x=", size_x, " size_y=", size_y)
+                        leds.append(led(x, y, strip, int(col-1), (0,0,0,0)))
         else:
             print("Fichier ", options.mode_matrix_file, "introuvable")
             exit()
@@ -257,24 +285,6 @@ if __name__ == '__main__':
 
     time.sleep(2)
 
-    
-
-    #####
-    size_y, size_x = (int(largeur_maison*matrix_upscaling),int(longueur_maison*matrix_upscaling))
-    print "size_x : ",size_x, "size_y : ", size_y
-    
-    ### TODO
-    if size_y > size_x:
-        old_x=size_x
-        size_x=size_y
-        biggerY=True
-    else:
-        old_y=size_y
-        size_y=size_x
-        biggerY=False
-    
-
-
     print "Dimensions matrix_grad : (", size_y,",",size_x,")"
 
     steps = 180
@@ -289,26 +299,6 @@ if __name__ == '__main__':
         x, y = project_sun(elevation, azimut_soleil - azimut_maison, size_x,size_y)
 
         # Placement du soleil sur le plan
-        
-        
-        
-        
-        
-        
-        
-        ##TODO
-        print "x : " ,x, " y : ",y
-        #if biggerY:
-        #    print x, size_x/2, old_x/2
-        #    x= x + size_x/2 - old_x/2
-        #else:
-        #    y= y + size_y/2 - old_y/2
-
-
-
-
-
-
 
         print "x : " ,x, " y : ",y
         matrix_grad[y,x] = 1
