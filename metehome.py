@@ -154,10 +154,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
     (options,args) = parser.parse_args()
 
     # Ci-dessous les paramètres nécessaires au fonctionement du programme.
