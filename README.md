@@ -4,7 +4,9 @@ Affichage du soleil sur une matrice de 64 * 64 LEDs.
 L'instalation est destinée à être placée sur un plafond pour servir à la fois d'éclarage et d'ambiance.
 
 
-**TODO** Liens vers le wiki + explication plus détaillée.
+**TODO** Explication plus détaillée.
+
+Wiki FabLab : https://fablab.ensimag.fr/index.php?title=Météhome
 
 
 Calcul de la position du soleil : https://github.com/Neon22/sun-angle
