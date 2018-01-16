@@ -22,6 +22,15 @@ def project_sun(elevation, azimut, size_x, size_y):
 
     return (int(x),int(y))
 
+def render_image(upscaled_colors):
+    upscaled_colors[largeur_upscaling,longueur_upscaling:-longueur_upscaling] = (255,0,0)
+    upscaled_colors[-largeur_upscaling-1,longueur_upscaling:-longueur_upscaling] = (255,0,0)
+    upscaled_colors[largeur_upscaling:-largeur_upscaling, longueur_upscaling] = (255,0,0)
+    upscaled_colors[largeur_upscaling:-largeur_upscaling, -longueur_upscaling-1] = (255,0,0)
+    img = Image.fromarray(np.uint8(upscaled_colors),'RGB')
+    img.save('imgs/s.png')
+
+
 import numpy as np
 import sunpos2 as sunpos
 import math
@@ -155,12 +164,7 @@ if __name__ == '__main__':
 
 
         # Rendu de l'image de prévisualisation
-        # upscaled_colors[largeur_upscaling,longueur_upscaling:-longueur_upscaling] = (255,0,0)
-        # upscaled_colors[-largeur_upscaling-1,longueur_upscaling:-longueur_upscaling] = (255,0,0)
-        # upscaled_colors[largeur_upscaling:-largeur_upscaling, longueur_upscaling] = (255,0,0)
-        # upscaled_colors[largeur_upscaling:-largeur_upscaling, -longueur_upscaling-1] = (255,0,0)
-        # img = Image.fromarray(np.uint8(upscaled_colors),'RGB')
-        # img.save('imgs/s.png')
+        # render_image(upscaled_colors)
 
         steps += 10
         time.sleep(0.09)
