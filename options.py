@@ -40,20 +40,26 @@ def read_options():
                         dest="matrix_upscaling",
                         default=1.2,
                         help="[Avancé] Taux d'agrandissement de la matrice de visualisation du soleil")
-    parser.add_option("-l", "--limite",
+    parser.add_option("--limite",
                         action="store",
                         dest="limite_coucher_de_soleil",
                         default=5,
                         help="[Avancé] Limite d'azimut permettant de débuter le coucher du soleil afin de permettre un dégradé")
-    parser.add_option("-x", "--longueur",
+    parser.add_option("-y", "--longueur",
                         action="store",
                         dest="longueur_maison",
                         default=75,
                         help="Longueur en nombre de leds de la maison. Paramètre pris en compte lorsque -r activé")
-    parser.add_option("-y", "--largeur",
+    parser.add_option("-x", "--largeur",
                         action="store",
                         dest="largeur_maison",
                         default=75,
                         help="Largeur en nombre de leds de la maison. Paramètre pris en compte lorsque -r activé")
+
+    parser.add_option("-l", "--luminosity",
+                        action="store",
+                        dest="luminosity",
+                        default=1,
+                        help="Coefficient de luminosité")
 
     return  parser.parse_args()

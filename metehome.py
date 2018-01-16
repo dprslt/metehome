@@ -64,14 +64,15 @@ if __name__ == '__main__':
     matrix_upscaling = float(options.matrix_upscaling)
     print "\tmatrix_upscaling : ", matrix_upscaling
 
+    user_luminosity = float(options.luminosity)
+    print "\luminosité utilisateur : ", user_luminosity
+
     ############################ Constantes ####################################
     # Lorsque l'orientation du soleil passe en dessous de cette limite,
     # c'est le debut de la nuit noire
     # Cette valeur sert à créer un dégradé pour la tombée de la nuit
     LIMITE_COUCHER_DE_SOLEIL = int(options.limite_coucher_de_soleil)
     print "\tLIMITE_COUCHER_DE_SOLEIL : ", LIMITE_COUCHER_DE_SOLEIL
-
-    VALEUR_DE_NORMALISATION_DE_LA_MATRICE = 255
 
     # Dimensions en nombres de leds
     longueur_maison = int(options.longueur_maison)
@@ -92,12 +93,15 @@ if __name__ == '__main__':
 
     print "Taille totale : ", largeur,", ", longueur
 
+
+    ############# Boucle de traitement #############
+
     OPC_server = fastopc.FastOPC()
 
 
+    VALEUR_DE_NORMALISATION_DE_LA_MATRICE = 255
+    SECURITY_LUMINOSITY=0.7
 
-
-    ############# Boucle de traitement #############
     steps = 0
     while(True):
 
@@ -142,6 +146,9 @@ if __name__ == '__main__':
         colors = upscaled_colors[largeur_upscaling:largeur - largeur_upscaling, longueur_upscaling:longueur-longueur_upscaling]
         #Transformation de la matrice en un tableau de pixel à une dimention
         colors = colors.reshape((largeur_maison * longueur_maison, 3))
+
+        # Application du coefficient de correction pour limiter la luminosité des leds
+        colors = colors * user_luminosity * SECURITY_LUMINOSITY
 
         # On utilise le client OPC pour envoyer les pixels à afficher à la matrice
         OPC_server.putPixels(0,colors)
