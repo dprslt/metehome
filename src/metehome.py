@@ -30,6 +30,11 @@ def render_image(upscaled_colors):
     img = Image.fromarray(np.uint8(upscaled_colors),'RGB')
     img.save('imgs/s.png')
 
+from datetime import datetime
+
+def get_hours_minutes():
+    t = datetime.now().strftime("%H%M")
+    return t[0:2], t[2:4]
 
 import numpy as np
 import sunpos2 as sunpos
@@ -164,7 +169,7 @@ if __name__ == '__main__':
 
 
         # Rendu de l'image de prévisualisation
-        # render_image(upscaled_colors)
+        render_image(upscaled_colors)
 
         steps += 10
         time.sleep(0.09)
